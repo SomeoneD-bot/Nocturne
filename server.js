@@ -19,6 +19,15 @@ app.get("/api/health", (req, res) => {
   });
 });
 
+app.get("/api/config", (req, res) => {
+  res.set("Cache-Control", "no-store");
+
+  res.json({
+    supabaseUrl: process.env.SUPABASE_URL || "",
+    supabaseKey: process.env.SUPABASE_ANON_KEY || ""
+  });
+});
+
 app.use((req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
