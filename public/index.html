@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nocturne — Your world, your rules</title>
+
   <style>
     * {
       box-sizing: border-box;
@@ -13,222 +14,389 @@
     }
 
     body {
-      font-family: Arial, sans-serif;
-      background: #17151d;
-      color: #f5edf5;
       min-height: 100vh;
+      background:
+        radial-gradient(ellipse at top, #38233f, transparent 60%),
+        #100e16;
+      color: #f8edf7;
+      font-family: Arial, sans-serif;
       display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
     }
 
-    .sidebar {
-      width: 250px;
-      background: #100f16;
-      padding: 25px 15px;
-      border-right: 1px solid #302838;
+    .container {
+      width: 100%;
+      max-width: 440px;
+      background: rgba(29, 24, 37, 0.96);
+      border: 1px solid #49354f;
+      border-radius: 22px;
+      padding: 35px;
+      box-shadow: 0 20px 80px #0008;
     }
 
     .logo {
-      font-size: 27px;
+      text-align: center;
+      color: #e6a3cb;
+      font-size: 32px;
+      letter-spacing: 6px;
       font-weight: bold;
-      letter-spacing: 3px;
-      color: #e9a3ca;
-      margin-bottom: 35px;
-    }
-
-    .section {
-      color: #8f8498;
-      font-size: 11px;
-      letter-spacing: 2px;
-      margin: 25px 8px 12px;
-    }
-
-    .nav-item {
-      padding: 12px;
-      margin: 5px 0;
-      border-radius: 9px;
-      color: #c5bacb;
-      cursor: pointer;
-    }
-
-    .nav-item:hover, .active {
-      background: #38243b;
-      color: #f3b5da;
-    }
-
-    .main {
-      flex: 1;
-      padding: 35px;
-      overflow-y: auto;
-    }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .topbar h2 {
-      font-size: 22px;
-    }
-
-    .profile {
-      background: #292331;
-      border: 1px solid #49364e;
-      padding: 10px 16px;
-      border-radius: 20px;
-    }
-
-    .welcome {
-      margin-top: 65px;
-      padding: 45px;
-      border-radius: 20px;
-      background: linear-gradient(135deg, #39223f, #211b30, #17151d);
-      border: 1px solid #59405e;
-    }
-
-    .welcome h1 {
-      font-size: 42px;
-      margin-bottom: 15px;
-      color: #f2b4d8;
-    }
-
-    .welcome p {
-      color: #c9baca;
-      line-height: 1.7;
-      max-width: 550px;
-    }
-
-    button {
-      border: none;
-      padding: 13px 20px;
-      margin-top: 25px;
-      border-radius: 9px;
-      background: #c66b9e;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #df8cba;
-    }
-
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 18px;
-      margin-top: 30px;
-    }
-
-    .card {
-      background: #211e29;
-      border: 1px solid #39303f;
-      padding: 22px;
-      border-radius: 15px;
-    }
-
-    .card h3 {
-      color: #e7a1c9;
       margin-bottom: 10px;
     }
 
-    .card p {
-      color: #aaa0b2;
-      line-height: 1.5;
+    .subtitle {
+      text-align: center;
+      color: #a99bad;
+      margin-bottom: 30px;
       font-size: 14px;
     }
 
-    @media(max-width: 650px) {
-      .sidebar {
-        width: 75px;
-        padding: 15px 7px;
-      }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 25px;
+    }
 
-      .logo {
-        font-size: 12px;
-        letter-spacing: 0;
-      }
+    .tabs button {
+      flex: 1;
+      padding: 12px;
+      background: #292332;
+      border: 1px solid #403449;
+      color: #bcb0c2;
+      border-radius: 9px;
+      cursor: pointer;
+    }
 
-      .nav-item {
-        font-size: 11px;
-        padding: 10px 4px;
-        text-align: center;
-      }
+    .tabs button.active {
+      background: #633b61;
+      color: white;
+      border-color: #bd78a8;
+    }
 
-      .main {
-        padding: 18px;
-      }
+    h2 {
+      margin-bottom: 20px;
+      font-size: 23px;
+    }
 
-      .welcome {
-        padding: 25px;
-      }
+    label {
+      display: block;
+      color: #d5c5d7;
+      font-size: 13px;
+      margin: 15px 0 7px;
+    }
 
-      .welcome h1 {
-        font-size: 30px;
+    input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #46394e;
+      border-radius: 9px;
+      background: #17141e;
+      color: white;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #cf85b5;
+    }
+
+    .submit {
+      width: 100%;
+      padding: 14px;
+      margin-top: 24px;
+      border: none;
+      border-radius: 9px;
+      background: #b96d9e;
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .submit:hover {
+      background: #d58ab9;
+    }
+
+    .forgot {
+      display: block;
+      text-align: right;
+      color: #dc9bc5;
+      margin-top: 13px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .message {
+      margin-top: 18px;
+      padding: 12px;
+      border-radius: 9px;
+      background: #302638;
+      color: #edc2dc;
+      font-size: 13px;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .footer {
+      text-align: center;
+      color: #796f80;
+      font-size: 12px;
+      margin-top: 25px;
+    }
+
+    .welcome {
+      text-align: center;
+    }
+
+    .welcome h2 {
+      color: #e6a3cb;
+      margin: 20px 0;
+    }
+
+    @media(max-width: 480px) {
+      .container {
+        padding: 25px 20px;
       }
     }
   </style>
 </head>
 
 <body>
-  <aside class="sidebar">
+
+  <main class="container">
+
     <div class="logo">NOCTURNE</div>
+    <p class="subtitle">Your world. Your rules.</p>
 
-    <div class="section">MENU</div>
-    <div class="nav-item active">⌂ Accueil</div>
-    <div class="nav-item">♙ Amis</div>
-    <div class="nav-item">✉ Messages</div>
+    <div id="authArea">
 
-    <div class="section">COMMUNAUTÉS</div>
-    <div class="nav-item">＋ Découvrir</div>
-    <div class="nav-item">＋ Créer un serveur</div>
+      <div class="tabs">
+        <button id="loginTab" class="active" type="button">
+          Connexion
+        </button>
+        <button id="signupTab" type="button">
+          Inscription
+        </button>
+      </div>
 
-    <div class="section">PERSONNALISATION</div>
-    <div class="nav-item">♧ Mon profil</div>
-    <div class="nav-item">✧ Boutique</div>
-    <div class="nav-item">⚙ Paramètres</div>
-  </aside>
+      <form id="loginForm">
+        <h2>Heureuse de te revoir ♡</h2>
 
-  <main class="main">
-    <div class="topbar">
-      <h2>Bienvenue sur Nocturne</h2>
-      <div class="profile">♡ Mon compte</div>
+        <label>Adresse courriel</label>
+        <input id="loginEmail" type="email"
+          placeholder="ton@email.com" required>
+
+        <label>Mot de passe</label>
+        <input id="loginPassword" type="password"
+          placeholder="Ton mot de passe" required>
+
+        <span class="forgot" id="forgot">
+          Mot de passe oublié ?
+        </span>
+
+        <button class="submit" type="submit">
+          Se connecter
+        </button>
+      </form>
+
+      <form id="signupForm" class="hidden">
+        <h2>Rejoins Nocturne ♡</h2>
+
+        <label>Ton pseudo</label>
+        <input id="username" type="text"
+          placeholder="Ton pseudo" minlength="3"
+          maxlength="24" required>
+
+        <label>Adresse courriel</label>
+        <input id="signupEmail" type="email"
+          placeholder="ton@email.com" required>
+
+        <label>Mot de passe</label>
+        <input id="signupPassword" type="password"
+          placeholder="8 caractères minimum"
+          minlength="8" required>
+
+        <label>Confirmer le mot de passe</label>
+        <input id="confirmPassword" type="password"
+          placeholder="Confirme ton mot de passe" required>
+
+        <button class="submit" type="submit">
+          Créer mon compte
+        </button>
+      </form>
+
+      <div id="message" class="message"></div>
+
     </div>
 
-    <section class="welcome">
-      <h1>Your world. Your rules.</h1>
-      <p>
-        Bienvenue dans ton nouvel univers.
-        Retrouve tes amies, crée tes communautés,
-        personnalise ton profil et invente ton propre espace.
-      </p>
-      <button onclick="alert('La création de serveur arrive bientôt !')">
-        Découvrir Nocturne
+    <div id="welcomeArea" class="welcome hidden">
+      <h2>Bienvenue sur Nocturne ♡</h2>
+      <p id="welcomeText"></p>
+      <button class="submit" id="logout" type="button">
+        Se déconnecter
       </button>
-    </section>
-
-    <div class="cards">
-      <div class="card">
-        <h3>♡ Mes amis</h3>
-        <p>Retrouve tes amies et discute avec elles.</p>
-      </div>
-
-      <div class="card">
-        <h3>♧ Communautés</h3>
-        <p>Crée tes propres serveurs et salons.</p>
-      </div>
-
-      <div class="card">
-        <h3>✧ Personnalisation</h3>
-        <p>Construis un profil qui te ressemble.</p>
-      </div>
-
-      <div class="card">
-        <h3>☾ Boutique</h3>
-        <p>Découvre des décorations et animations.</p>
-      </div>
     </div>
+
+    <div class="footer">
+      NOCTURNE © 2026 · Un univers à toi.
+    </div>
+
   </main>
+
+  <script type="module">
+    import { createClient }
+      from "https://esm.sh/@supabase/supabase-js@2";
+
+    const configResponse = await fetch("/api/config");
+    const config = await configResponse.json();
+
+    if (!config.supabaseUrl || !config.supabaseKey) {
+      throw new Error("Configuration Supabase manquante.");
+    }
+
+    const supabase = createClient(
+      config.supabaseUrl,
+      config.supabaseKey
+    );
+
+    const loginTab = document.getElementById("loginTab");
+    const signupTab = document.getElementById("signupTab");
+    const loginForm = document.getElementById("loginForm");
+    const signupForm = document.getElementById("signupForm");
+    const message = document.getElementById("message");
+
+    function showMessage(text) {
+      message.textContent = text;
+      message.style.display = "block";
+    }
+
+    function switchTab(signup) {
+      loginForm.classList.toggle("hidden", signup);
+      signupForm.classList.toggle("hidden", !signup);
+      loginTab.classList.toggle("active", !signup);
+      signupTab.classList.toggle("active", signup);
+      message.style.display = "none";
+    }
+
+    loginTab.onclick = () => switchTab(false);
+    signupTab.onclick = () => switchTab(true);
+
+    loginForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) {
+        showMessage(error.message);
+      }
+    });
+
+    signupForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const username =
+        document.getElementById("username").value.trim();
+
+      const email =
+        document.getElementById("signupEmail").value;
+
+      const password =
+        document.getElementById("signupPassword").value;
+
+      const confirmation =
+        document.getElementById("confirmPassword").value;
+
+      if (password !== confirmation) {
+        showMessage("Les deux mots de passe ne correspondent pas.");
+        return;
+      }
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { username },
+          emailRedirectTo: window.location.origin
+        }
+      });
+
+      if (error) {
+        showMessage(error.message);
+        return;
+      }
+
+      if (data.session) {
+        showMessage("Ton compte est créé ! Bienvenue sur Nocturne.");
+      } else {
+        showMessage(
+          "Un courriel de confirmation t'a été envoyé. Vérifie ta boîte de réception."
+        );
+      }
+    });
+
+    document.getElementById("forgot").onclick = async () => {
+      const email = document.getElementById("loginEmail").value;
+
+      if (!email) {
+        showMessage("Entre d'abord ton adresse courriel.");
+        return;
+      }
+
+      const { error } =
+        await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin
+        });
+
+      showMessage(error
+        ? error.message
+        : "Si cette adresse possède un compte, un courriel de récupération sera envoyé."
+      );
+    };
+
+    async function updateSession(session) {
+      const authArea = document.getElementById("authArea");
+      const welcomeArea = document.getElementById("welcomeArea");
+
+      if (session) {
+        authArea.classList.add("hidden");
+        welcomeArea.classList.remove("hidden");
+
+        const username =
+          session.user.user_metadata?.username || session.user.email;
+
+        document.getElementById("welcomeText").textContent =
+          "Connectée en tant que " + username;
+      } else {
+        authArea.classList.remove("hidden");
+        welcomeArea.classList.add("hidden");
+      }
+    }
+
+    const { data: sessionData } =
+      await supabase.auth.getSession();
+
+    await updateSession(sessionData.session);
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      updateSession(session);
+    });
+
+    document.getElementById("logout").onclick = async () => {
+      const { error } = await supabase.auth.signOut();
+
+      if (error) showMessage(error.message);
+    };
+  </script>
+
 </body>
 </html>
