@@ -1,0 +1,234 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nocturne — Your world, your rules</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #17151d;
+      color: #f5edf5;
+      min-height: 100vh;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 250px;
+      background: #100f16;
+      padding: 25px 15px;
+      border-right: 1px solid #302838;
+    }
+
+    .logo {
+      font-size: 27px;
+      font-weight: bold;
+      letter-spacing: 3px;
+      color: #e9a3ca;
+      margin-bottom: 35px;
+    }
+
+    .section {
+      color: #8f8498;
+      font-size: 11px;
+      letter-spacing: 2px;
+      margin: 25px 8px 12px;
+    }
+
+    .nav-item {
+      padding: 12px;
+      margin: 5px 0;
+      border-radius: 9px;
+      color: #c5bacb;
+      cursor: pointer;
+    }
+
+    .nav-item:hover, .active {
+      background: #38243b;
+      color: #f3b5da;
+    }
+
+    .main {
+      flex: 1;
+      padding: 35px;
+      overflow-y: auto;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .topbar h2 {
+      font-size: 22px;
+    }
+
+    .profile {
+      background: #292331;
+      border: 1px solid #49364e;
+      padding: 10px 16px;
+      border-radius: 20px;
+    }
+
+    .welcome {
+      margin-top: 65px;
+      padding: 45px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #39223f, #211b30, #17151d);
+      border: 1px solid #59405e;
+    }
+
+    .welcome h1 {
+      font-size: 42px;
+      margin-bottom: 15px;
+      color: #f2b4d8;
+    }
+
+    .welcome p {
+      color: #c9baca;
+      line-height: 1.7;
+      max-width: 550px;
+    }
+
+    button {
+      border: none;
+      padding: 13px 20px;
+      margin-top: 25px;
+      border-radius: 9px;
+      background: #c66b9e;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #df8cba;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 18px;
+      margin-top: 30px;
+    }
+
+    .card {
+      background: #211e29;
+      border: 1px solid #39303f;
+      padding: 22px;
+      border-radius: 15px;
+    }
+
+    .card h3 {
+      color: #e7a1c9;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      color: #aaa0b2;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    @media(max-width: 650px) {
+      .sidebar {
+        width: 75px;
+        padding: 15px 7px;
+      }
+
+      .logo {
+        font-size: 12px;
+        letter-spacing: 0;
+      }
+
+      .nav-item {
+        font-size: 11px;
+        padding: 10px 4px;
+        text-align: center;
+      }
+
+      .main {
+        padding: 18px;
+      }
+
+      .welcome {
+        padding: 25px;
+      }
+
+      .welcome h1 {
+        font-size: 30px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <aside class="sidebar">
+    <div class="logo">NOCTURNE</div>
+
+    <div class="section">MENU</div>
+    <div class="nav-item active">⌂ Accueil</div>
+    <div class="nav-item">♙ Amis</div>
+    <div class="nav-item">✉ Messages</div>
+
+    <div class="section">COMMUNAUTÉS</div>
+    <div class="nav-item">＋ Découvrir</div>
+    <div class="nav-item">＋ Créer un serveur</div>
+
+    <div class="section">PERSONNALISATION</div>
+    <div class="nav-item">♧ Mon profil</div>
+    <div class="nav-item">✧ Boutique</div>
+    <div class="nav-item">⚙ Paramètres</div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <h2>Bienvenue sur Nocturne</h2>
+      <div class="profile">♡ Mon compte</div>
+    </div>
+
+    <section class="welcome">
+      <h1>Your world. Your rules.</h1>
+      <p>
+        Bienvenue dans ton nouvel univers.
+        Retrouve tes amies, crée tes communautés,
+        personnalise ton profil et invente ton propre espace.
+      </p>
+      <button onclick="alert('La création de serveur arrive bientôt !')">
+        Découvrir Nocturne
+      </button>
+    </section>
+
+    <div class="cards">
+      <div class="card">
+        <h3>♡ Mes amis</h3>
+        <p>Retrouve tes amies et discute avec elles.</p>
+      </div>
+
+      <div class="card">
+        <h3>♧ Communautés</h3>
+        <p>Crée tes propres serveurs et salons.</p>
+      </div>
+
+      <div class="card">
+        <h3>✧ Personnalisation</h3>
+        <p>Construis un profil qui te ressemble.</p>
+      </div>
+
+      <div class="card">
+        <h3>☾ Boutique</h3>
+        <p>Découvre des décorations et animations.</p>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
