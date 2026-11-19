@@ -2,401 +2,830 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nocturne — Your world, your rules</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nocturne — Your world, your rules</title>
+<script src="https://esm.sh/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --bg: #17131d;
+  --sidebar: #100e16;
+  --panel: #211b29;
+  --panel2: #2b2333;
+  --accent: #c779aa;
+  --accent2: #75415f;
+  --text: #f8edf7;
+  --muted: #a99bad;
+  --border: #443447;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body {
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+}
+button,input,textarea { font:inherit; }
+button { cursor:pointer; }
+.hidden { display:none!important; }
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+/* CONNEXION */
+#authArea {
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:radial-gradient(ellipse at top,#462943,var(--bg) 70%);
+}
+.auth-card {
+  width:100%;
+  max-width:440px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:32px;
+  box-shadow:0 20px 80px #0008;
+}
+.logo {
+  text-align:center;
+  color:var(--accent);
+  font-size:32px;
+  font-weight:bold;
+  letter-spacing:7px;
+  margin-bottom:8px;
+}
+.subtitle {
+  text-align:center;
+  color:var(--muted);
+  margin-bottom:28px;
+  font-size:13px;
+}
+.tabs { display:flex; gap:8px; margin-bottom:24px; }
+.tabs button {
+  flex:1;
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:var(--panel2);
+  color:var(--muted);
+}
+.tabs button.active {
+  background:var(--accent2);
+  color:white;
+}
+label {
+  display:block;
+  margin:15px 0 7px;
+  color:var(--muted);
+  font-size:13px;
+}
+.auth-card input {
+  width:100%;
+  padding:13px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:var(--sidebar);
+  color:white;
+}
+.primary {
+  background:var(--accent);
+  color:white;
+  border:0;
+  padding:13px 18px;
+  border-radius:8px;
+  font-weight:bold;
+}
+.auth-card .primary { width:100%; margin-top:22px; }
+.forgot {
+  display:block;
+  text-align:right;
+  color:var(--accent);
+  font-size:13px;
+  margin-top:12px;
+  cursor:pointer;
+}
+#authMessage {
+  margin-top:16px;
+  color:#f0badb;
+  font-size:13px;
+  line-height:1.5;
+}
+.auth-footer {
+  text-align:center;
+  margin-top:25px;
+  font-size:12px;
+  color:var(--muted);
+}
 
-    body {
-      min-height: 100vh;
-      background:
-        radial-gradient(ellipse at top, #38233f, transparent 60%),
-        #100e16;
-      color: #f8edf7;
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 440px;
-      background: rgba(29, 24, 37, 0.96);
-      border: 1px solid #49354f;
-      border-radius: 22px;
-      padding: 35px;
-      box-shadow: 0 20px 80px #0008;
-    }
-
-    .logo {
-      text-align: center;
-      color: #e6a3cb;
-      font-size: 32px;
-      letter-spacing: 6px;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-
-    .subtitle {
-      text-align: center;
-      color: #a99bad;
-      margin-bottom: 30px;
-      font-size: 14px;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 25px;
-    }
-
-    .tabs button {
-      flex: 1;
-      padding: 12px;
-      background: #292332;
-      border: 1px solid #403449;
-      color: #bcb0c2;
-      border-radius: 9px;
-      cursor: pointer;
-    }
-
-    .tabs button.active {
-      background: #633b61;
-      color: white;
-      border-color: #bd78a8;
-    }
-
-    h2 {
-      margin-bottom: 20px;
-      font-size: 23px;
-    }
-
-    label {
-      display: block;
-      color: #d5c5d7;
-      font-size: 13px;
-      margin: 15px 0 7px;
-    }
-
-    input {
-      width: 100%;
-      padding: 13px;
-      border: 1px solid #46394e;
-      border-radius: 9px;
-      background: #17141e;
-      color: white;
-      outline: none;
-    }
-
-    input:focus {
-      border-color: #cf85b5;
-    }
-
-    .submit {
-      width: 100%;
-      padding: 14px;
-      margin-top: 24px;
-      border: none;
-      border-radius: 9px;
-      background: #b96d9e;
-      color: white;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .submit:hover {
-      background: #d58ab9;
-    }
-
-    .forgot {
-      display: block;
-      text-align: right;
-      color: #dc9bc5;
-      margin-top: 13px;
-      font-size: 13px;
-      cursor: pointer;
-    }
-
-    .message {
-      margin-top: 18px;
-      padding: 12px;
-      border-radius: 9px;
-      background: #302638;
-      color: #edc2dc;
-      font-size: 13px;
-      line-height: 1.5;
-      display: none;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .footer {
-      text-align: center;
-      color: #796f80;
-      font-size: 12px;
-      margin-top: 25px;
-    }
-
-    .welcome {
-      text-align: center;
-    }
-
-    .welcome h2 {
-      color: #e6a3cb;
-      margin: 20px 0;
-    }
-
-    @media(max-width: 480px) {
-      .container {
-        padding: 25px 20px;
-      }
-    }
-  </style>
+/* APPLICATION */
+#app {
+  height:100vh;
+  display:flex;
+  overflow:hidden;
+}
+.servers {
+  width:70px;
+  flex-shrink:0;
+  background:var(--sidebar);
+  display:flex;
+  align-items:center;
+  flex-direction:column;
+  gap:12px;
+  padding:14px 8px;
+  overflow:auto;
+}
+.server-icon {
+  width:48px;
+  height:48px;
+  border-radius:17px;
+  background:var(--panel2);
+  display:grid;
+  place-items:center;
+  font-size:22px;
+  border:1px solid var(--border);
+  cursor:pointer;
+  transition:.2s;
+}
+.server-icon:hover,.server-icon.selected {
+  border-radius:12px;
+  background:var(--accent2);
+}
+.server-add { color:var(--accent); font-size:27px; }
+.channels {
+  width:245px;
+  flex-shrink:0;
+  background:var(--panel);
+  display:flex;
+  flex-direction:column;
+  border-right:1px solid var(--border);
+}
+.server-title {
+  padding:22px 18px;
+  border-bottom:1px solid var(--border);
+  font-weight:bold;
+  letter-spacing:2px;
+}
+.channel-heading {
+  padding:22px 15px 8px;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:bold;
+  letter-spacing:1px;
+}
+.channel {
+  padding:10px 13px;
+  margin:2px 9px;
+  color:var(--muted);
+  border-radius:7px;
+  cursor:pointer;
+}
+.channel:hover,.channel.active {
+  background:var(--panel2);
+  color:white;
+}
+.channel span { margin-right:8px; }
+.profile {
+  margin-top:auto;
+  padding:13px;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  background:var(--sidebar);
+}
+.avatar {
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background:var(--accent2);
+  display:grid;
+  place-items:center;
+  font-weight:bold;
+}
+.profile-info { min-width:0; flex:1; }
+.profile-name {
+  font-size:13px;
+  font-weight:bold;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.profile-status { font-size:11px; color:var(--muted); }
+.small-button {
+  background:none;
+  color:var(--muted);
+  border:0;
+  font-size:19px;
+  padding:5px;
+}
+.main {
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+}
+.topbar {
+  height:62px;
+  flex-shrink:0;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 22px;
+}
+.topbar-title { font-weight:bold; }
+.topbar-actions { display:flex; gap:10px; }
+.topbar button {
+  background:var(--panel2);
+  border:1px solid var(--border);
+  color:var(--text);
+  border-radius:7px;
+  padding:8px 12px;
+}
+.content {
+  flex:1;
+  min-height:0;
+  display:flex;
+}
+.chat {
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+}
+.chat-messages {
+  flex:1;
+  overflow:auto;
+  padding:25px;
+}
+.welcome-message {
+  margin:30px 0;
+  padding:25px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:12px;
+}
+.welcome-message h2 {
+  color:var(--accent);
+  margin-bottom:10px;
+}
+.demo-note {
+  font-size:12px;
+  color:var(--muted);
+  margin-top:12px;
+}
+.composer {
+  padding:15px 22px;
+}
+.composer input {
+  width:100%;
+  padding:15px;
+  border:1px solid var(--border);
+  background:var(--panel);
+  color:white;
+  border-radius:9px;
+}
+.members {
+  width:190px;
+  flex-shrink:0;
+  border-left:1px solid var(--border);
+  padding:20px 12px;
+  background:#00000012;
+}
+.members h3 {
+  color:var(--muted);
+  font-size:11px;
+  letter-spacing:1px;
+  margin-bottom:18px;
+}
+.member {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin:12px 0;
+  font-size:13px;
+}
+.member-dot {
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#72bd91;
+}
+.view {
+  padding:28px;
+  overflow:auto;
+  width:100%;
+}
+.view h2 { margin-bottom:20px; }
+.settings-card {
+  max-width:650px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  padding:22px;
+  border-radius:12px;
+  margin-bottom:18px;
+}
+.settings-card h3 { margin-bottom:15px; }
+.settings-card p {
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.5;
+  margin-bottom:12px;
+}
+.color-row {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:14px 0;
+}
+.color-row label { flex:1; margin:0; }
+.color-row input[type=color] {
+  width:55px;
+  height:38px;
+  border:0;
+  background:none;
+}
+.color-row input[type=text] {
+  width:105px;
+  padding:9px;
+  background:var(--sidebar);
+  border:1px solid var(--border);
+  color:white;
+  border-radius:6px;
+}
+.theme-grid {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+}
+.theme-option {
+  min-height:70px;
+  border-radius:9px;
+  border:2px solid transparent;
+  color:white;
+  font-weight:bold;
+}
+.theme-option:hover { border-color:white; }
+.settings-actions { display:flex; gap:10px; flex-wrap:wrap; }
+.secondary {
+  padding:11px 15px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--panel2);
+  color:white;
+}
+.mobile-menu { display:none; }
+@media(max-width:800px) {
+  .channels { width:190px; }
+  .members { display:none; }
+}
+@media(max-width:560px) {
+  #app { position:relative; }
+  .servers { width:55px; }
+  .server-icon { width:39px; height:39px; }
+  .channels { width:155px; }
+  .server-title { padding:18px 10px; font-size:12px; }
+  .channel { font-size:12px; padding:10px 7px; }
+  .topbar { padding:0 10px; }
+  .topbar button { font-size:11px; padding:7px; }
+  .chat-messages { padding:12px; }
+  .view { padding:15px; }
+  .theme-grid { grid-template-columns:repeat(2,1fr); }
+}
+</style>
 </head>
-
 <body>
 
-  <main class="container">
-
+<!-- CONNEXION ET INSCRIPTION -->
+<section id="authArea">
+  <div class="auth-card">
     <div class="logo">NOCTURNE</div>
     <p class="subtitle">Your world. Your rules.</p>
 
-    <div id="authArea">
+    <div class="tabs">
+      <button id="loginTab" class="active" type="button">Connexion</button>
+      <button id="signupTab" type="button">Inscription</button>
+    </div>
 
-      <div class="tabs">
-        <button id="loginTab" class="active" type="button">
-          Connexion
-        </button>
-        <button id="signupTab" type="button">
-          Inscription
-        </button>
+    <form id="loginForm">
+      <h2>Heureuse de te revoir ♡</h2>
+      <label>Adresse courriel</label>
+      <input id="loginEmail" type="email" placeholder="ton@email.com" required>
+      <label>Mot de passe</label>
+      <input id="loginPassword" type="password" placeholder="Ton mot de passe" required>
+      <span class="forgot" id="forgot">Mot de passe oublié ?</span>
+      <button class="primary" type="submit">Se connecter</button>
+    </form>
+
+    <form id="signupForm" class="hidden">
+      <h2>Rejoins Nocturne ♡</h2>
+      <label>Ton pseudo</label>
+      <input id="username" type="text" placeholder="Ton pseudo" minlength="3" maxlength="24" required>
+      <label>Adresse courriel</label>
+      <input id="signupEmail" type="email" placeholder="ton@email.com" required>
+      <label>Mot de passe</label>
+      <input id="signupPassword" type="password" placeholder="8 caractères minimum" minlength="8" required>
+      <label>Confirmer le mot de passe</label>
+      <input id="confirmPassword" type="password" placeholder="Confirme ton mot de passe" required>
+      <button class="primary" type="submit">Créer mon compte</button>
+    </form>
+
+    <div id="authMessage"></div>
+    <div class="auth-footer">NOCTURNE © 2026 · Un univers à toi.</div>
+  </div>
+</section>
+
+<!-- APPLICATION -->
+<section id="app" class="hidden">
+  <aside class="servers">
+    <div class="server-icon selected" title="Nocturne">☾</div>
+    <div class="server-icon" title="Communauté">🦇</div>
+    <div class="server-icon" title="Amis">♡</div>
+    <div class="server-icon server-add" title="Créer un serveur">+</div>
+  </aside>
+
+  <aside class="channels">
+    <div class="server-title">☾ NOCTURNE</div>
+
+    <div class="channel-heading">SALONS TEXTUELS</div>
+    <div class="channel active" data-channel="general"><span>#</span> général</div>
+    <div class="channel" data-channel="random"><span>#</span> discussions</div>
+    <div class="channel" data-channel="memes"><span>#</span> memes</div>
+    <div class="channel" data-channel="music"><span>#</span> musique</div>
+
+    <div class="channel-heading">SALONS VOCAUX</div>
+    <div class="channel"><span>♫</span> Chill zone</div>
+    <div class="channel"><span>♫</span> Night talks</div>
+
+    <div class="profile">
+      <div class="avatar" id="profileAvatar">N</div>
+      <div class="profile-info">
+        <div class="profile-name" id="profileName">Nocturne</div>
+        <div class="profile-status">En ligne</div>
       </div>
-
-      <form id="loginForm">
-        <h2>Heureuse de te revoir ♡</h2>
-
-        <label>Adresse courriel</label>
-        <input id="loginEmail" type="email"
-          placeholder="ton@email.com" required>
-
-        <label>Mot de passe</label>
-        <input id="loginPassword" type="password"
-          placeholder="Ton mot de passe" required>
-
-        <span class="forgot" id="forgot">
-          Mot de passe oublié ?
-        </span>
-
-        <button class="submit" type="submit">
-          Se connecter
-        </button>
-      </form>
-
-      <form id="signupForm" class="hidden">
-        <h2>Rejoins Nocturne ♡</h2>
-
-        <label>Ton pseudo</label>
-        <input id="username" type="text"
-          placeholder="Ton pseudo" minlength="3"
-          maxlength="24" required>
-
-        <label>Adresse courriel</label>
-        <input id="signupEmail" type="email"
-          placeholder="ton@email.com" required>
-
-        <label>Mot de passe</label>
-        <input id="signupPassword" type="password"
-          placeholder="8 caractères minimum"
-          minlength="8" required>
-
-        <label>Confirmer le mot de passe</label>
-        <input id="confirmPassword" type="password"
-          placeholder="Confirme ton mot de passe" required>
-
-        <button class="submit" type="submit">
-          Créer mon compte
-        </button>
-      </form>
-
-      <div id="message" class="message"></div>
-
+      <button class="small-button" id="settingsButton" title="Paramètres">⚙</button>
+      <button class="small-button" id="logout" title="Déconnexion">↪</button>
     </div>
+  </aside>
 
-    <div id="welcomeArea" class="welcome hidden">
-      <h2>Bienvenue sur Nocturne ♡</h2>
-      <p id="welcomeText"></p>
-      <button class="submit" id="logout" type="button">
-        Se déconnecter
-      </button>
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-title" id="channelTitle"># général</div>
+      <div class="topbar-actions">
+        <button id="homeButton">Accueil</button>
+        <button id="themeButton">Personnaliser ✦</button>
+      </div>
+    </header>
+
+    <div class="content">
+      <section class="chat" id="chatView">
+        <div class="chat-messages">
+          <div class="welcome-message">
+            <h2>Bienvenue dans Nocturne ♡</h2>
+            <p>Un petit coin à toi, loin du bruit du monde.</p>
+            <p class="demo-note">Ton espace est prêt. Les messages partagés en direct seront ajoutés dans une prochaine étape.</p>
+          </div>
+          <div class="welcome-message">
+            <h2>☾ Une nouvelle nuit commence</h2>
+            <p>Personnalise ton univers et invite tes amis à le rejoindre.</p>
+          </div>
+        </div>
+        <div class="composer">
+          <input type="text" placeholder="Les messages seront bientôt disponibles..." disabled>
+        </div>
+      </section>
+
+      <section class="view hidden" id="settingsView">
+        <h2>✦ Personnalise ton Nocturne</h2>
+
+        <div class="settings-card">
+          <h3>Ta palette personnelle</h3>
+          <p>Choisis tes couleurs préférées. Elles seront sauvegardées dans ton compte.</p>
+
+          <div class="color-row">
+            <label for="accentColor">Couleur principale</label>
+            <input type="color" id="accentColor" value="#c779aa">
+            <input type="text" id="accentHex" value="#c779aa" maxlength="7">
+          </div>
+          <div class="color-row">
+            <label for="backgroundColor">Couleur de fond</label>
+            <input type="color" id="backgroundColor" value="#17131d">
+            <input type="text" id="backgroundHex" value="#17131d" maxlength="7">
+          </div>
+          <div class="color-row">
+            <label for="panelColor">Couleur des panneaux</label>
+            <input type="color" id="panelColor" value="#211b29">
+            <input type="text" id="panelHex" value="#211b29" maxlength="7">
+          </div>
+          <div class="settings-actions">
+            <button class="primary" id="saveTheme">Sauvegarder mes couleurs</button>
+            <button class="secondary" id="resetTheme">Réinitialiser</button>
+          </div>
+          <p id="themeMessage" style="margin-top:14px"></p>
+        </div>
+
+        <div class="settings-card">
+          <h3>Thèmes prédéfinis</h3>
+          <p>Tu peux choisir un thème et ensuite modifier chaque couleur.</p>
+          <div class="theme-grid">
+            <button class="theme-option" data-theme="blood" style="background:#701b32">Blood Moon</button>
+            <button class="theme-option" data-theme="pink" style="background:#b85c91">Cotton Candy</button>
+            <button class="theme-option" data-theme="midnight" style="background:#292b50">Midnight</button>
+            <button class="theme-option" data-theme="forest" style="background:#285844">Forest</button>
+            <button class="theme-option" data-theme="void" style="background:#171717">Void</button>
+            <button class="theme-option" data-theme="lavender" style="background:#8064b6">Lavender</button>
+          </div>
+        </div>
+      </section>
     </div>
-
-    <div class="footer">
-      NOCTURNE © 2026 · Un univers à toi.
-    </div>
-
   </main>
+</section>
 
-  <script type="module">
-    import { createClient }
-      from "https://esm.sh/@supabase/supabase-js@2";
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-    const configResponse = await fetch("/api/config");
-    const config = await configResponse.json();
+const configResponse = await fetch("/api/config");
+if (!configResponse.ok) throw new Error("Impossible de charger la configuration.");
+const config = await configResponse.json();
 
-    if (!config.supabaseUrl || !config.supabaseKey) {
-      throw new Error("Configuration Supabase manquante.");
+if (!config.supabaseUrl || !config.supabaseKey) {
+  throw new Error("Configuration Supabase manquante.");
+}
+
+const supabase = createClient(config.supabaseUrl, config.supabaseKey);
+
+const authArea = document.getElementById("authArea");
+const app = document.getElementById("app");
+const loginTab = document.getElementById("loginTab");
+const signupTab = document.getElementById("signupTab");
+const loginForm = document.getElementById("loginForm");
+const signupForm = document.getElementById("signupForm");
+const authMessage = document.getElementById("authMessage");
+const themeMessage = document.getElementById("themeMessage");
+
+function showAuthMessage(message) {
+  authMessage.textContent = message;
+}
+
+function switchTab(signup) {
+  loginForm.classList.toggle("hidden", signup);
+  signupForm.classList.toggle("hidden", !signup);
+  loginTab.classList.toggle("active", !signup);
+  signupTab.classList.toggle("active", signup);
+  showAuthMessage("");
+}
+
+loginTab.onclick = () => switchTab(false);
+signupTab.onclick = () => switchTab(true);
+
+loginForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  showAuthMessage("Connexion en cours...");
+
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value;
+
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) showAuthMessage(error.message);
+});
+
+signupForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const username = document.getElementById("username").value.trim();
+  const email = document.getElementById("signupEmail").value.trim();
+  const password = document.getElementById("signupPassword").value;
+  const confirmation = document.getElementById("confirmPassword").value;
+
+  if (password !== confirmation) {
+    showAuthMessage("Les deux mots de passe ne correspondent pas.");
+    return;
+  }
+
+  showAuthMessage("Création du compte en cours...");
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { username },
+      emailRedirectTo: window.location.origin
     }
+  });
 
-    const supabase = createClient(
-      config.supabaseUrl,
-      config.supabaseKey
-    );
+  if (error) {
+    showAuthMessage(error.message);
+    return;
+  }
 
-    const loginTab = document.getElementById("loginTab");
-    const signupTab = document.getElementById("signupTab");
-    const loginForm = document.getElementById("loginForm");
-    const signupForm = document.getElementById("signupForm");
-    const message = document.getElementById("message");
+  if (data.session) {
+    showAuthMessage("Ton compte est créé ! Bienvenue sur Nocturne.");
+  } else {
+    showAuthMessage("Un courriel de confirmation t'a été envoyé. Vérifie ta boîte de réception.");
+  }
+});
 
-    function showMessage(text) {
-      message.textContent = text;
-      message.style.display = "block";
+document.getElementById("forgot").onclick = async () => {
+  const email = document.getElementById("loginEmail").value.trim();
+
+  if (!email) {
+    showAuthMessage("Entre d'abord ton adresse courriel.");
+    return;
+  }
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin
+  });
+
+  showAuthMessage(error
+    ? error.message
+    : "Si cette adresse possède un compte, un courriel de récupération sera envoyé."
+  );
+};
+
+let currentUser = null;
+
+const defaultTheme = {
+  accent: "#c779aa",
+  background: "#17131d",
+  panel: "#211b29"
+};
+
+function validHex(value) {
+  return /^#[0-9a-fA-F]{6}$/.test(value);
+}
+
+function applyTheme(theme) {
+  const safe = {
+    accent: validHex(theme?.accent) ? theme.accent : defaultTheme.accent,
+    background: validHex(theme?.background) ? theme.background : defaultTheme.background,
+    panel: validHex(theme?.panel) ? theme.panel : defaultTheme.panel
+  };
+
+  document.documentElement.style.setProperty("--accent", safe.accent);
+  document.documentElement.style.setProperty("--accent2", safe.accent);
+  document.documentElement.style.setProperty("--bg", safe.background);
+  document.documentElement.style.setProperty("--panel", safe.panel);
+
+  document.getElementById("accentColor").value = safe.accent;
+  document.getElementById("accentHex").value = safe.accent;
+  document.getElementById("backgroundColor").value = safe.background;
+  document.getElementById("backgroundHex").value = safe.background;
+  document.getElementById("panelColor").value = safe.panel;
+  document.getElementById("panelHex").value = safe.panel;
+}
+
+function readThemeInputs() {
+  return {
+    accent: document.getElementById("accentHex").value,
+    background: document.getElementById("backgroundHex").value,
+    panel: document.getElementById("panelHex").value
+  };
+}
+
+function syncColorInputs(colorId, hexId) {
+  const color = document.getElementById(colorId);
+  const hex = document.getElementById(hexId);
+
+  color.addEventListener("input", () => {
+    hex.value = color.value;
+    applyTheme(readThemeInputs());
+  });
+
+  hex.addEventListener("change", () => {
+    if (validHex(hex.value)) {
+      color.value = hex.value;
+      applyTheme(readThemeInputs());
     }
+  });
+}
 
-    function switchTab(signup) {
-      loginForm.classList.toggle("hidden", signup);
-      signupForm.classList.toggle("hidden", !signup);
-      loginTab.classList.toggle("active", !signup);
-      signupTab.classList.toggle("active", signup);
-      message.style.display = "none";
-    }
+syncColorInputs("accentColor", "accentHex");
+syncColorInputs("backgroundColor", "backgroundHex");
+syncColorInputs("panelColor", "panelHex");
 
-    loginTab.onclick = () => switchTab(false);
-    signupTab.onclick = () => switchTab(true);
+async function saveTheme() {
+  if (!currentUser) return;
 
-    loginForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
+  const theme = readThemeInputs();
 
-      const email = document.getElementById("loginEmail").value;
-      const password = document.getElementById("loginPassword").value;
+  if (!validHex(theme.accent) ||
+      !validHex(theme.background) ||
+      !validHex(theme.panel)) {
+    themeMessage.textContent = "Entre des couleurs HEX valides, par exemple #c779aa.";
+    return;
+  }
 
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
+  themeMessage.textContent = "Sauvegarde en cours...";
+  applyTheme(theme);
 
-      if (error) {
-        showMessage(error.message);
-      }
-    });
+  const { data, error } = await supabase.auth.updateUser({
+    data: { nocturne_theme: theme }
+  });
 
-    signupForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
+  if (error) {
+    themeMessage.textContent = "Erreur : " + error.message;
+    return;
+  }
 
-      const username =
-        document.getElementById("username").value.trim();
+  currentUser = data.user;
+  themeMessage.textContent = "Tes couleurs ont été sauvegardées ! ♡";
+}
 
-      const email =
-        document.getElementById("signupEmail").value;
+document.getElementById("saveTheme").onclick = saveTheme;
 
-      const password =
-        document.getElementById("signupPassword").value;
+document.getElementById("resetTheme").onclick = () => {
+  applyTheme(defaultTheme);
+  themeMessage.textContent = "Palette réinitialisée. Clique sur sauvegarder pour la conserver.";
+};
 
-      const confirmation =
-        document.getElementById("confirmPassword").value;
+const themes = {
+  blood: { accent:"#c04468", background:"#1b1017", panel:"#301b27" },
+  pink: { accent:"#e58abc", background:"#21131e", panel:"#382137" },
+  midnight: { accent:"#8588dc", background:"#111322", panel:"#222640" },
+  forest: { accent:"#67b58c", background:"#101b17", panel:"#20362b" },
+  void: { accent:"#aaaaaa", background:"#111111", panel:"#242424" },
+  lavender: { accent:"#ad91e9", background:"#191426", panel:"#2b2140" }
+};
 
-      if (password !== confirmation) {
-        showMessage("Les deux mots de passe ne correspondent pas.");
-        return;
-      }
+document.querySelectorAll(".theme-option").forEach(button => {
+  button.addEventListener("click", () => {
+    const theme = themes[button.dataset.theme];
+    applyTheme(theme);
+    themeMessage.textContent = "Thème sélectionné ! Clique sur sauvegarder pour le conserver.";
+  });
+});
 
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { username },
-          emailRedirectTo: window.location.origin
-        }
-      });
+function showSettings() {
+  document.getElementById("chatView").classList.add("hidden");
+  document.getElementById("settingsView").classList.remove("hidden");
+  document.getElementById("channelTitle").textContent = "Personnalisation";
+}
 
-      if (error) {
-        showMessage(error.message);
-        return;
-      }
+function showHome() {
+  document.getElementById("settingsView").classList.add("hidden");
+  document.getElementById("chatView").classList.remove("hidden");
+  document.getElementById("channelTitle").textContent = "# général";
+}
 
-      if (data.session) {
-        showMessage("Ton compte est créé ! Bienvenue sur Nocturne.");
-      } else {
-        showMessage(
-          "Un courriel de confirmation t'a été envoyé. Vérifie ta boîte de réception."
-        );
-      }
-    });
+document.getElementById("settingsButton").onclick = showSettings;
+document.getElementById("themeButton").onclick = showSettings;
+document.getElementById("homeButton").onclick = showHome;
 
-    document.getElementById("forgot").onclick = async () => {
-      const email = document.getElementById("loginEmail").value;
+document.querySelectorAll(".channel[data-channel]").forEach(channel => {
+  channel.addEventListener("click", () => {
+    document.querySelectorAll(".channel").forEach(item => item.classList.remove("active"));
+    channel.classList.add("active");
+    document.getElementById("channelTitle").textContent =
+      "# " + channel.dataset.channel;
+    showHome();
+    document.getElementById("channelTitle").textContent =
+      "# " + channel.dataset.channel;
+  });
+});
 
-      if (!email) {
-        showMessage("Entre d'abord ton adresse courriel.");
-        return;
-      }
+async function updateSession(session) {
+  if (session) {
+    currentUser = session.user;
+    authArea.classList.add("hidden");
+    app.classList.remove("hidden");
 
-      const { error } =
-        await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: window.location.origin
-        });
+    const username =
+      session.user.user_metadata?.username ||
+      session.user.email?.split("@")[0] ||
+      "Membre";
 
-      showMessage(error
-        ? error.message
-        : "Si cette adresse possède un compte, un courriel de récupération sera envoyé."
-      );
-    };
+    document.getElementById("profileName").textContent = username;
+    document.getElementById("profileAvatar").textContent =
+      username.charAt(0).toUpperCase();
 
-    async function updateSession(session) {
-      const authArea = document.getElementById("authArea");
-      const welcomeArea = document.getElementById("welcomeArea");
+    const savedTheme = session.user.user_metadata?.nocturne_theme || defaultTheme;
+    applyTheme(savedTheme);
+    showHome();
+  } else {
+    currentUser = null;
+    app.classList.add("hidden");
+    authArea.classList.remove("hidden");
+  }
+}
 
-      if (session) {
-        authArea.classList.add("hidden");
-        welcomeArea.classList.remove("hidden");
+const { data: sessionData, error: sessionError } =
+  await supabase.auth.getSession();
 
-        const username =
-          session.user.user_metadata?.username || session.user.email;
+if (sessionError) {
+  showAuthMessage(sessionError.message);
+} else {
+  await updateSession(sessionData.session);
+}
 
-        document.getElementById("welcomeText").textContent =
-          "Connectée en tant que " + username;
-      } else {
-        authArea.classList.remove("hidden");
-        welcomeArea.classList.add("hidden");
-      }
-    }
+supabase.auth.onAuthStateChange((_event, session) => {
+  updateSession(session);
+});
 
-    const { data: sessionData } =
-      await supabase.auth.getSession();
-
-    await updateSession(sessionData.session);
-
-    supabase.auth.onAuthStateChange((_event, session) => {
-      updateSession(session);
-    });
-
-    document.getElementById("logout").onclick = async () => {
-      const { error } = await supabase.auth.signOut();
-
-      if (error) showMessage(error.message);
-    };
-  </script>
-
+document.getElementById("logout").onclick = async () => {
+  const { error } = await supabase.auth.signOut();
+  if (error) alert(error.message);
+};
+</script>
 </body>
 </html>
