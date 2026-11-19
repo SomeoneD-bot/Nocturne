@@ -5,378 +5,189 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nocturne — Your world, your rules</title>
-<script src="https://esm.sh/@supabase/supabase-js@2"></script>
 <style>
 :root {
-  --bg: #17131d;
-  --sidebar: #100e16;
-  --panel: #211b29;
-  --panel2: #2b2333;
-  --accent: #c779aa;
-  --accent2: #75415f;
-  --text: #f8edf7;
-  --muted: #a99bad;
-  --border: #443447;
+  --bg:#17131d;
+  --sidebar:#100e16;
+  --panel:#211b29;
+  --panel2:#2b2333;
+  --accent:#c779aa;
+  --accent2:#75415f;
+  --text:#f8edf7;
+  --muted:#a99bad;
+  --border:#443447;
 }
 * { box-sizing:border-box; margin:0; padding:0; }
-body {
-  font-family:Arial,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  min-height:100vh;
-}
-button,input,textarea { font:inherit; }
+body { font-family:Arial,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+button,input,textarea,select { font:inherit; }
 button { cursor:pointer; }
 .hidden { display:none!important; }
+img { max-width:100%; }
 
 /* CONNEXION */
 #authArea {
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
+  min-height:100vh; display:flex; align-items:center;
+  justify-content:center; padding:20px;
   background:radial-gradient(ellipse at top,#462943,var(--bg) 70%);
 }
 .auth-card {
-  width:100%;
-  max-width:440px;
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:20px;
-  padding:32px;
-  box-shadow:0 20px 80px #0008;
+  width:100%; max-width:440px; background:var(--panel);
+  border:1px solid var(--border); border-radius:20px;
+  padding:32px; box-shadow:0 20px 80px #0008;
 }
-.logo {
-  text-align:center;
-  color:var(--accent);
-  font-size:32px;
-  font-weight:bold;
-  letter-spacing:7px;
-  margin-bottom:8px;
-}
-.subtitle {
-  text-align:center;
-  color:var(--muted);
-  margin-bottom:28px;
-  font-size:13px;
-}
+.logo { text-align:center; color:var(--accent); font-size:32px; font-weight:bold; letter-spacing:7px; margin-bottom:8px; }
+.subtitle { text-align:center; color:var(--muted); margin-bottom:28px; font-size:13px; }
 .tabs { display:flex; gap:8px; margin-bottom:24px; }
-.tabs button {
-  flex:1;
-  padding:12px;
-  border:1px solid var(--border);
-  border-radius:8px;
-  background:var(--panel2);
-  color:var(--muted);
-}
-.tabs button.active {
-  background:var(--accent2);
-  color:white;
-}
-label {
-  display:block;
-  margin:15px 0 7px;
-  color:var(--muted);
-  font-size:13px;
-}
+.tabs button { flex:1; padding:12px; border:1px solid var(--border); border-radius:8px; background:var(--panel2); color:var(--muted); }
+.tabs button.active { background:var(--accent2); color:white; }
+label { display:block; margin:15px 0 7px; color:var(--muted); font-size:13px; }
 .auth-card input {
-  width:100%;
-  padding:13px;
-  border:1px solid var(--border);
-  border-radius:8px;
-  background:var(--sidebar);
-  color:white;
+  width:100%; padding:13px; border:1px solid var(--border);
+  border-radius:8px; background:var(--sidebar); color:white;
 }
-.primary {
-  background:var(--accent);
-  color:white;
-  border:0;
-  padding:13px 18px;
-  border-radius:8px;
-  font-weight:bold;
-}
+.primary { background:var(--accent); color:white; border:0; padding:13px 18px; border-radius:8px; font-weight:bold; }
 .auth-card .primary { width:100%; margin-top:22px; }
-.forgot {
-  display:block;
-  text-align:right;
-  color:var(--accent);
-  font-size:13px;
-  margin-top:12px;
-  cursor:pointer;
-}
-#authMessage {
-  margin-top:16px;
-  color:#f0badb;
-  font-size:13px;
-  line-height:1.5;
-}
-.auth-footer {
-  text-align:center;
-  margin-top:25px;
-  font-size:12px;
-  color:var(--muted);
-}
+.forgot { display:block; text-align:right; color:var(--accent); font-size:13px; margin-top:12px; cursor:pointer; }
+#authMessage { margin-top:16px; color:#f0badb; font-size:13px; line-height:1.5; }
+.auth-footer { text-align:center; margin-top:25px; font-size:12px; color:var(--muted); }
 
 /* APPLICATION */
-#app {
-  height:100vh;
-  display:flex;
-  overflow:hidden;
-}
+#app { height:100vh; display:flex; overflow:hidden; }
 .servers {
-  width:70px;
-  flex-shrink:0;
-  background:var(--sidebar);
-  display:flex;
-  align-items:center;
-  flex-direction:column;
-  gap:12px;
-  padding:14px 8px;
-  overflow:auto;
+  width:70px; flex-shrink:0; background:var(--sidebar);
+  display:flex; align-items:center; flex-direction:column;
+  gap:12px; padding:14px 8px; overflow:auto;
 }
 .server-icon {
-  width:48px;
-  height:48px;
-  border-radius:17px;
-  background:var(--panel2);
-  display:grid;
-  place-items:center;
-  font-size:22px;
-  border:1px solid var(--border);
-  cursor:pointer;
+  width:48px; height:48px; border-radius:17px;
+  background:var(--panel2); display:grid; place-items:center;
+  font-size:22px; border:1px solid var(--border); cursor:pointer;
   transition:.2s;
 }
-.server-icon:hover,.server-icon.selected {
-  border-radius:12px;
-  background:var(--accent2);
-}
+.server-icon:hover,.server-icon.selected { border-radius:12px; background:var(--accent2); }
 .server-add { color:var(--accent); font-size:27px; }
 .channels {
-  width:245px;
-  flex-shrink:0;
-  background:var(--panel);
-  display:flex;
-  flex-direction:column;
-  border-right:1px solid var(--border);
+  width:245px; flex-shrink:0; background:var(--panel);
+  display:flex; flex-direction:column; border-right:1px solid var(--border);
 }
-.server-title {
-  padding:22px 18px;
-  border-bottom:1px solid var(--border);
-  font-weight:bold;
-  letter-spacing:2px;
-}
-.channel-heading {
-  padding:22px 15px 8px;
-  color:var(--muted);
-  font-size:11px;
-  font-weight:bold;
-  letter-spacing:1px;
-}
-.channel {
-  padding:10px 13px;
-  margin:2px 9px;
-  color:var(--muted);
-  border-radius:7px;
-  cursor:pointer;
-}
-.channel:hover,.channel.active {
-  background:var(--panel2);
-  color:white;
-}
+.server-title { padding:22px 18px; border-bottom:1px solid var(--border); font-weight:bold; letter-spacing:2px; }
+.channel-heading { padding:22px 15px 8px; color:var(--muted); font-size:11px; font-weight:bold; letter-spacing:1px; }
+.channel { padding:10px 13px; margin:2px 9px; color:var(--muted); border-radius:7px; cursor:pointer; }
+.channel:hover,.channel.active { background:var(--panel2); color:white; }
 .channel span { margin-right:8px; }
 .profile {
-  margin-top:auto;
-  padding:13px;
-  display:flex;
-  align-items:center;
-  gap:9px;
-  background:var(--sidebar);
+  margin-top:auto; padding:13px; display:flex; align-items:center;
+  gap:9px; background:var(--sidebar);
 }
 .avatar {
-  width:36px;
-  height:36px;
-  border-radius:50%;
-  background:var(--accent2);
-  display:grid;
-  place-items:center;
-  font-weight:bold;
+  width:36px; height:36px; border-radius:50%; background:var(--accent2);
+  display:grid; place-items:center; font-weight:bold; object-fit:cover;
 }
 .profile-info { min-width:0; flex:1; }
-.profile-name {
-  font-size:13px;
-  font-weight:bold;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
+.profile-name { font-size:13px; font-weight:bold; overflow:hidden; text-overflow:ellipsis; }
 .profile-status { font-size:11px; color:var(--muted); }
-.small-button {
-  background:none;
-  color:var(--muted);
-  border:0;
-  font-size:19px;
-  padding:5px;
-}
-.main {
-  flex:1;
-  min-width:0;
-  display:flex;
-  flex-direction:column;
-}
+.small-button { background:none; color:var(--muted); border:0; font-size:19px; padding:5px; }
+.main { flex:1; min-width:0; display:flex; flex-direction:column; }
 .topbar {
-  height:62px;
-  flex-shrink:0;
-  border-bottom:1px solid var(--border);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 22px;
+  height:62px; flex-shrink:0; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between; padding:0 22px;
 }
 .topbar-title { font-weight:bold; }
 .topbar-actions { display:flex; gap:10px; }
 .topbar button {
-  background:var(--panel2);
-  border:1px solid var(--border);
-  color:var(--text);
-  border-radius:7px;
-  padding:8px 12px;
+  background:var(--panel2); border:1px solid var(--border);
+  color:var(--text); border-radius:7px; padding:8px 12px;
 }
-.content {
-  flex:1;
-  min-height:0;
-  display:flex;
-}
-.chat {
-  flex:1;
-  min-width:0;
-  display:flex;
-  flex-direction:column;
-}
-.chat-messages {
-  flex:1;
-  overflow:auto;
-  padding:25px;
-}
+.content { flex:1; min-height:0; display:flex; }
+.chat { flex:1; min-width:0; display:flex; flex-direction:column; }
+.chat-messages { flex:1; overflow:auto; padding:25px; }
 .welcome-message {
-  margin:30px 0;
-  padding:25px;
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:12px;
+  margin:30px 0; padding:25px; background:var(--panel);
+  border:1px solid var(--border); border-radius:12px;
 }
-.welcome-message h2 {
-  color:var(--accent);
-  margin-bottom:10px;
-}
-.demo-note {
-  font-size:12px;
-  color:var(--muted);
-  margin-top:12px;
-}
-.composer {
-  padding:15px 22px;
-}
+.welcome-message h2 { color:var(--accent); margin-bottom:10px; }
+.demo-note { font-size:12px; color:var(--muted); margin-top:12px; }
+.composer { padding:15px 22px; }
 .composer input {
-  width:100%;
-  padding:15px;
-  border:1px solid var(--border);
-  background:var(--panel);
-  color:white;
-  border-radius:9px;
+  width:100%; padding:15px; border:1px solid var(--border);
+  background:var(--panel); color:white; border-radius:9px;
 }
-.members {
-  width:190px;
-  flex-shrink:0;
-  border-left:1px solid var(--border);
-  padding:20px 12px;
-  background:#00000012;
-}
-.members h3 {
-  color:var(--muted);
-  font-size:11px;
-  letter-spacing:1px;
-  margin-bottom:18px;
-}
-.member {
-  display:flex;
-  align-items:center;
-  gap:9px;
-  margin:12px 0;
-  font-size:13px;
-}
-.member-dot {
-  width:9px;
-  height:9px;
-  border-radius:50%;
-  background:#72bd91;
-}
-.view {
-  padding:28px;
-  overflow:auto;
-  width:100%;
-}
+.view { padding:28px; overflow:auto; width:100%; }
 .view h2 { margin-bottom:20px; }
 .settings-card {
-  max-width:650px;
-  background:var(--panel);
-  border:1px solid var(--border);
-  padding:22px;
-  border-radius:12px;
-  margin-bottom:18px;
+  max-width:650px; background:var(--panel); border:1px solid var(--border);
+  padding:22px; border-radius:12px; margin-bottom:18px;
 }
 .settings-card h3 { margin-bottom:15px; }
-.settings-card p {
-  color:var(--muted);
-  font-size:13px;
-  line-height:1.5;
-  margin-bottom:12px;
-}
-.color-row {
-  display:flex;
-  align-items:center;
-  gap:12px;
-  margin:14px 0;
-}
+.settings-card p { color:var(--muted); font-size:13px; line-height:1.5; margin-bottom:12px; }
+.color-row { display:flex; align-items:center; gap:12px; margin:14px 0; }
 .color-row label { flex:1; margin:0; }
-.color-row input[type=color] {
-  width:55px;
-  height:38px;
-  border:0;
-  background:none;
-}
+.color-row input[type=color] { width:55px; height:38px; border:0; background:none; }
 .color-row input[type=text] {
-  width:105px;
-  padding:9px;
-  background:var(--sidebar);
-  border:1px solid var(--border);
-  color:white;
-  border-radius:6px;
+  width:105px; padding:9px; background:var(--sidebar);
+  border:1px solid var(--border); color:white; border-radius:6px;
 }
-.theme-grid {
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:10px;
-}
+.theme-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
 .theme-option {
-  min-height:70px;
-  border-radius:9px;
-  border:2px solid transparent;
-  color:white;
-  font-weight:bold;
+  min-height:70px; border-radius:9px; border:2px solid transparent;
+  color:white; font-weight:bold;
 }
 .theme-option:hover { border-color:white; }
 .settings-actions { display:flex; gap:10px; flex-wrap:wrap; }
 .secondary {
-  padding:11px 15px;
-  border-radius:8px;
-  border:1px solid var(--border);
-  background:var(--panel2);
-  color:white;
+  padding:11px 15px; border-radius:8px; border:1px solid var(--border);
+  background:var(--panel2); color:white;
 }
-.mobile-menu { display:none; }
+
+/* PROFIL */
+.profile-layout { max-width:850px; }
+.profile-cover {
+  height:190px; background:linear-gradient(120deg,#321d34,#75415f,#c779aa);
+  background-size:cover; background-position:center;
+  border-radius:13px 13px 0 0; position:relative;
+}
+.profile-cover-placeholder {
+  position:absolute; inset:0; display:grid; place-items:center;
+  color:#ffffff80; font-size:35px; letter-spacing:5px;
+}
+.profile-sheet {
+  background:var(--panel); border:1px solid var(--border);
+  border-top:0; border-radius:0 0 13px 13px; padding:20px;
+  margin-bottom:22px;
+}
+.profile-preview-row { display:flex; align-items:flex-end; gap:15px; margin-top:-65px; position:relative; }
+.big-avatar {
+  width:112px; height:112px; border-radius:50%; object-fit:cover;
+  background:var(--panel2); border:6px solid var(--panel);
+  display:grid; place-items:center; font-size:38px; flex-shrink:0;
+}
+.preview-name { font-size:22px; font-weight:bold; padding-bottom:12px; }
+.preview-bio { color:var(--muted); font-size:14px; margin-top:12px; white-space:pre-wrap; }
+.preview-status { color:var(--accent); font-size:12px; margin-top:6px; }
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:0 18px; }
+.form-field { margin-bottom:12px; }
+.form-field label { margin:12px 0 7px; }
+.form-field input,.form-field textarea,.form-field select {
+  width:100%; padding:12px; background:var(--sidebar);
+  border:1px solid var(--border); border-radius:8px; color:white;
+}
+.form-field textarea { min-height:105px; resize:vertical; }
+.form-field input[type=file] { font-size:12px; }
+.profile-decoration {
+  border:2px solid var(--accent); box-shadow:0 0 14px var(--accent);
+}
+.decoration-options { display:flex; gap:10px; flex-wrap:wrap; margin:12px 0; }
+.decoration-option {
+  padding:10px 13px; background:var(--panel2);
+  border:1px solid var(--border); border-radius:8px; color:white;
+}
+.decoration-option.selected { border-color:var(--accent); background:var(--accent2); }
+.profile-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+#profileMessage { color:var(--accent); font-size:13px; margin-top:14px; }
+.file-help { color:var(--muted); font-size:11px; margin-top:6px; }
+
 @media(max-width:800px) {
   .channels { width:190px; }
-  .members { display:none; }
 }
 @media(max-width:560px) {
   #app { position:relative; }
@@ -390,22 +201,25 @@ label {
   .chat-messages { padding:12px; }
   .view { padding:15px; }
   .theme-grid { grid-template-columns:repeat(2,1fr); }
+  .form-grid { grid-template-columns:1fr; }
+  .profile-cover { height:140px; }
+  .big-avatar { width:85px; height:85px; }
+  .profile-preview-row { margin-top:-48px; }
+  .preview-name { font-size:18px; }
 }
 </style>
 </head>
 <body>
 
-<!-- CONNEXION ET INSCRIPTION -->
+<!-- CONNEXION -->
 <section id="authArea">
   <div class="auth-card">
     <div class="logo">NOCTURNE</div>
     <p class="subtitle">Your world. Your rules.</p>
-
     <div class="tabs">
       <button id="loginTab" class="active" type="button">Connexion</button>
       <button id="signupTab" type="button">Inscription</button>
     </div>
-
     <form id="loginForm">
       <h2>Heureuse de te revoir ♡</h2>
       <label>Adresse courriel</label>
@@ -415,7 +229,6 @@ label {
       <span class="forgot" id="forgot">Mot de passe oublié ?</span>
       <button class="primary" type="submit">Se connecter</button>
     </form>
-
     <form id="signupForm" class="hidden">
       <h2>Rejoins Nocturne ♡</h2>
       <label>Ton pseudo</label>
@@ -428,7 +241,6 @@ label {
       <input id="confirmPassword" type="password" placeholder="Confirme ton mot de passe" required>
       <button class="primary" type="submit">Créer mon compte</button>
     </form>
-
     <div id="authMessage"></div>
     <div class="auth-footer">NOCTURNE © 2026 · Un univers à toi.</div>
   </div>
@@ -445,23 +257,22 @@ label {
 
   <aside class="channels">
     <div class="server-title">☾ NOCTURNE</div>
-
     <div class="channel-heading">SALONS TEXTUELS</div>
     <div class="channel active" data-channel="general"><span>#</span> général</div>
     <div class="channel" data-channel="random"><span>#</span> discussions</div>
     <div class="channel" data-channel="memes"><span>#</span> memes</div>
     <div class="channel" data-channel="music"><span>#</span> musique</div>
-
     <div class="channel-heading">SALONS VOCAUX</div>
     <div class="channel"><span>♫</span> Chill zone</div>
     <div class="channel"><span>♫</span> Night talks</div>
 
     <div class="profile">
-      <div class="avatar" id="profileAvatar">N</div>
+      <img class="avatar" id="profileAvatar" alt="Avatar">
       <div class="profile-info">
         <div class="profile-name" id="profileName">Nocturne</div>
-        <div class="profile-status">En ligne</div>
+        <div class="profile-status" id="sidebarStatus">En ligne</div>
       </div>
+      <button class="small-button" id="profileButton" title="Mon profil">♡</button>
       <button class="small-button" id="settingsButton" title="Paramètres">⚙</button>
       <button class="small-button" id="logout" title="Déconnexion">↪</button>
     </div>
@@ -472,6 +283,7 @@ label {
       <div class="topbar-title" id="channelTitle"># général</div>
       <div class="topbar-actions">
         <button id="homeButton">Accueil</button>
+        <button id="profileTopButton">Mon profil</button>
         <button id="themeButton">Personnaliser ✦</button>
       </div>
     </header>
@@ -494,13 +306,12 @@ label {
         </div>
       </section>
 
+      <!-- PARAMETRES -->
       <section class="view hidden" id="settingsView">
         <h2>✦ Personnalise ton Nocturne</h2>
-
         <div class="settings-card">
           <h3>Ta palette personnelle</h3>
           <p>Choisis tes couleurs préférées. Elles seront sauvegardées dans ton compte.</p>
-
           <div class="color-row">
             <label for="accentColor">Couleur principale</label>
             <input type="color" id="accentColor" value="#c779aa">
@@ -522,10 +333,9 @@ label {
           </div>
           <p id="themeMessage" style="margin-top:14px"></p>
         </div>
-
         <div class="settings-card">
           <h3>Thèmes prédéfinis</h3>
-          <p>Tu peux choisir un thème et ensuite modifier chaque couleur.</p>
+          <p>Choisis un thème et modifie ensuite chaque couleur.</p>
           <div class="theme-grid">
             <button class="theme-option" data-theme="blood" style="background:#701b32">Blood Moon</button>
             <button class="theme-option" data-theme="pink" style="background:#b85c91">Cotton Candy</button>
@@ -533,6 +343,96 @@ label {
             <button class="theme-option" data-theme="forest" style="background:#285844">Forest</button>
             <button class="theme-option" data-theme="void" style="background:#171717">Void</button>
             <button class="theme-option" data-theme="lavender" style="background:#8064b6">Lavender</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROFIL -->
+      <section class="view hidden" id="profileView">
+        <div class="profile-layout">
+          <h2>♡ Mon profil</h2>
+
+          <div class="profile-cover" id="coverPreview">
+            <div class="profile-cover-placeholder" id="coverPlaceholder">NOCTURNE</div>
+          </div>
+          <div class="profile-sheet">
+            <div class="profile-preview-row">
+              <img id="avatarPreview" class="big-avatar" alt="Photo de profil">
+              <div class="preview-name" id="previewName">Mon profil</div>
+            </div>
+            <div class="preview-status" id="previewStatus">● En ligne</div>
+            <div class="preview-bio" id="previewBio">Bienvenue sur mon profil ♡</div>
+          </div>
+
+          <div class="settings-card">
+            <h3>Informations personnelles</h3>
+            <p>Personnalise ce que les autres membres pourront voir sur ton profil.</p>
+
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="editUsername">Ton pseudo</label>
+                <input id="editUsername" type="text" maxlength="24" placeholder="Ton pseudo">
+              </div>
+              <div class="form-field">
+                <label for="editStatus">Ton statut</label>
+                <select id="editStatus">
+                  <option value="En ligne">🟢 En ligne</option>
+                  <option value="Occupée">🔴 Occupée</option>
+                  <option value="Absente">🌙 Absente</option>
+                  <option value="Invisible">⚫ Invisible</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="editBio">Ta biographie</label>
+              <textarea id="editBio" maxlength="300" placeholder="Raconte un peu qui tu es... ♡"></textarea>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <h3>Photo de profil</h3>
+            <p>Choisis une image depuis ton appareil. Formats acceptés : JPG, PNG ou WebP. Maximum 5 Mo.</p>
+            <div class="form-field">
+              <label for="avatarFile">Importer une photo</label>
+              <input id="avatarFile" type="file" accept="image/png,image/jpeg,image/webp">
+            </div>
+            <div class="settings-actions">
+              <button class="secondary" id="removeAvatar">Retirer la photo</button>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <h3>Bannière du profil</h3>
+            <p>Ajoute une image qui représente ton univers. Maximum 5 Mo.</p>
+            <div class="form-field">
+              <label for="bannerFile">Importer une bannière</label>
+              <input id="bannerFile" type="file" accept="image/png,image/jpeg,image/webp">
+            </div>
+            <div class="settings-actions">
+              <button class="secondary" id="removeBanner">Retirer la bannière</button>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <h3>Décoration de ton avatar</h3>
+            <p>Choisis l'apparence de ton portrait.</p>
+            <div class="decoration-options">
+              <button class="decoration-option selected" data-decoration="none">Simple</button>
+              <button class="decoration-option" data-decoration="glow">✨ Glow</button>
+              <button class="decoration-option" data-decoration="pink">♡ Pink</button>
+              <button class="decoration-option" data-decoration="moon">☾ Moon</button>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <h3>Enregistrer ton profil</h3>
+            <p>Tes modifications seront conservées dans ton compte Nocturne.</p>
+            <div class="profile-actions">
+              <button class="primary" id="saveProfile">Enregistrer mon profil ♡</button>
+              <button class="secondary" id="cancelProfile">Annuler</button>
+            </div>
+            <div id="profileMessage"></div>
           </div>
         </div>
       </section>
@@ -561,6 +461,20 @@ const loginForm = document.getElementById("loginForm");
 const signupForm = document.getElementById("signupForm");
 const authMessage = document.getElementById("authMessage");
 const themeMessage = document.getElementById("themeMessage");
+const profileMessage = document.getElementById("profileMessage");
+
+let currentUser = null;
+let profileDraft = {
+  avatar_url:"",
+  banner_url:"",
+  decoration:"none"
+};
+
+const defaultTheme = {
+  accent:"#c779aa",
+  background:"#17131d",
+  panel:"#211b29"
+};
 
 function showAuthMessage(message) {
   authMessage.textContent = message;
@@ -576,6 +490,8 @@ function switchTab(signup) {
 
 loginTab.onclick = () => switchTab(false);
 signupTab.onclick = () => switchTab(true);
+
+/* AUTHENTIFICATION */
 
 loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -609,7 +525,7 @@ signupForm.addEventListener("submit", async (event) => {
     password,
     options: {
       data: { username },
-      emailRedirectTo: window.location.origin
+      emailRedirectTo:window.location.origin
     }
   });
 
@@ -634,7 +550,7 @@ document.getElementById("forgot").onclick = async () => {
   }
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin
+    redirectTo:window.location.origin
   });
 
   showAuthMessage(error
@@ -643,13 +559,7 @@ document.getElementById("forgot").onclick = async () => {
   );
 };
 
-let currentUser = null;
-
-const defaultTheme = {
-  accent: "#c779aa",
-  background: "#17131d",
-  panel: "#211b29"
-};
+/* THEMES */
 
 function validHex(value) {
   return /^#[0-9a-fA-F]{6}$/.test(value);
@@ -657,15 +567,15 @@ function validHex(value) {
 
 function applyTheme(theme) {
   const safe = {
-    accent: validHex(theme?.accent) ? theme.accent : defaultTheme.accent,
-    background: validHex(theme?.background) ? theme.background : defaultTheme.background,
-    panel: validHex(theme?.panel) ? theme.panel : defaultTheme.panel
+    accent:validHex(theme?.accent) ? theme.accent : defaultTheme.accent,
+    background:validHex(theme?.background) ? theme.background : defaultTheme.background,
+    panel:validHex(theme?.panel) ? theme.panel : defaultTheme.panel
   };
 
-  document.documentElement.style.setProperty("--accent", safe.accent);
-  document.documentElement.style.setProperty("--accent2", safe.accent);
-  document.documentElement.style.setProperty("--bg", safe.background);
-  document.documentElement.style.setProperty("--panel", safe.panel);
+  document.documentElement.style.setProperty("--accent",safe.accent);
+  document.documentElement.style.setProperty("--accent2",safe.accent);
+  document.documentElement.style.setProperty("--bg",safe.background);
+  document.documentElement.style.setProperty("--panel",safe.panel);
 
   document.getElementById("accentColor").value = safe.accent;
   document.getElementById("accentHex").value = safe.accent;
@@ -677,22 +587,22 @@ function applyTheme(theme) {
 
 function readThemeInputs() {
   return {
-    accent: document.getElementById("accentHex").value,
-    background: document.getElementById("backgroundHex").value,
-    panel: document.getElementById("panelHex").value
+    accent:document.getElementById("accentHex").value,
+    background:document.getElementById("backgroundHex").value,
+    panel:document.getElementById("panelHex").value
   };
 }
 
-function syncColorInputs(colorId, hexId) {
+function syncColorInputs(colorId,hexId) {
   const color = document.getElementById(colorId);
   const hex = document.getElementById(hexId);
 
-  color.addEventListener("input", () => {
+  color.addEventListener("input",() => {
     hex.value = color.value;
     applyTheme(readThemeInputs());
   });
 
-  hex.addEventListener("change", () => {
+  hex.addEventListener("change",() => {
     if (validHex(hex.value)) {
       color.value = hex.value;
       applyTheme(readThemeInputs());
@@ -700,27 +610,25 @@ function syncColorInputs(colorId, hexId) {
   });
 }
 
-syncColorInputs("accentColor", "accentHex");
-syncColorInputs("backgroundColor", "backgroundHex");
-syncColorInputs("panelColor", "panelHex");
+syncColorInputs("accentColor","accentHex");
+syncColorInputs("backgroundColor","backgroundHex");
+syncColorInputs("panelColor","panelHex");
 
 async function saveTheme() {
   if (!currentUser) return;
 
   const theme = readThemeInputs();
 
-  if (!validHex(theme.accent) ||
-      !validHex(theme.background) ||
-      !validHex(theme.panel)) {
-    themeMessage.textContent = "Entre des couleurs HEX valides, par exemple #c779aa.";
+  if (!validHex(theme.accent) || !validHex(theme.background) || !validHex(theme.panel)) {
+    themeMessage.textContent = "Entre des couleurs HEX valides.";
     return;
   }
 
   themeMessage.textContent = "Sauvegarde en cours...";
   applyTheme(theme);
 
-  const { data, error } = await supabase.auth.updateUser({
-    data: { nocturne_theme: theme }
+  const { data,error } = await supabase.auth.updateUser({
+    data:{ nocturne_theme:theme }
   });
 
   if (error) {
@@ -740,49 +648,296 @@ document.getElementById("resetTheme").onclick = () => {
 };
 
 const themes = {
-  blood: { accent:"#c04468", background:"#1b1017", panel:"#301b27" },
-  pink: { accent:"#e58abc", background:"#21131e", panel:"#382137" },
-  midnight: { accent:"#8588dc", background:"#111322", panel:"#222640" },
-  forest: { accent:"#67b58c", background:"#101b17", panel:"#20362b" },
-  void: { accent:"#aaaaaa", background:"#111111", panel:"#242424" },
-  lavender: { accent:"#ad91e9", background:"#191426", panel:"#2b2140" }
+  blood:{ accent:"#c04468",background:"#1b1017",panel:"#301b27" },
+  pink:{ accent:"#e58abc",background:"#21131e",panel:"#382137" },
+  midnight:{ accent:"#8588dc",background:"#111322",panel:"#222640" },
+  forest:{ accent:"#67b58c",background:"#101b17",panel:"#20362b" },
+  void:{ accent:"#aaaaaa",background:"#111111",panel:"#242424" },
+  lavender:{ accent:"#ad91e9",background:"#191426",panel:"#2b2140" }
 };
 
 document.querySelectorAll(".theme-option").forEach(button => {
-  button.addEventListener("click", () => {
-    const theme = themes[button.dataset.theme];
-    applyTheme(theme);
+  button.addEventListener("click",() => {
+    applyTheme(themes[button.dataset.theme]);
     themeMessage.textContent = "Thème sélectionné ! Clique sur sauvegarder pour le conserver.";
   });
 });
 
-function showSettings() {
-  document.getElementById("chatView").classList.add("hidden");
-  document.getElementById("settingsView").classList.remove("hidden");
-  document.getElementById("channelTitle").textContent = "Personnalisation";
+/* NAVIGATION */
+
+function showView(viewName,title) {
+  document.getElementById("chatView").classList.toggle("hidden",viewName !== "chat");
+  document.getElementById("settingsView").classList.toggle("hidden",viewName !== "settings");
+  document.getElementById("profileView").classList.toggle("hidden",viewName !== "profile");
+  document.getElementById("channelTitle").textContent = title;
 }
 
 function showHome() {
-  document.getElementById("settingsView").classList.add("hidden");
-  document.getElementById("chatView").classList.remove("hidden");
-  document.getElementById("channelTitle").textContent = "# général";
+  showView("chat","# général");
+}
+
+function showSettings() {
+  showView("settings","Personnalisation");
+}
+
+function showProfile() {
+  loadProfileEditor();
+  showView("profile","Mon profil");
 }
 
 document.getElementById("settingsButton").onclick = showSettings;
 document.getElementById("themeButton").onclick = showSettings;
 document.getElementById("homeButton").onclick = showHome;
+document.getElementById("profileButton").onclick = showProfile;
+document.getElementById("profileTopButton").onclick = showProfile;
 
 document.querySelectorAll(".channel[data-channel]").forEach(channel => {
-  channel.addEventListener("click", () => {
+  channel.addEventListener("click",() => {
     document.querySelectorAll(".channel").forEach(item => item.classList.remove("active"));
     channel.classList.add("active");
-    document.getElementById("channelTitle").textContent =
-      "# " + channel.dataset.channel;
-    showHome();
-    document.getElementById("channelTitle").textContent =
-      "# " + channel.dataset.channel;
+    showView("chat","# "+channel.dataset.channel);
   });
 });
+
+/* PROFIL */
+
+function getMetadata() {
+  return currentUser?.user_metadata || {};
+}
+
+function updateProfilePreview() {
+  const username = document.getElementById("editUsername").value.trim() || "Mon profil";
+  const bio = document.getElementById("editBio").value;
+  const status = document.getElementById("editStatus").value;
+
+  document.getElementById("previewName").textContent = username;
+  document.getElementById("previewBio").textContent = bio || "Bienvenue sur mon profil ♡";
+  document.getElementById("previewStatus").textContent = "● "+status;
+
+  const avatar = document.getElementById("avatarPreview");
+  if (profileDraft.avatar_url) {
+    avatar.src = profileDraft.avatar_url;
+  } else {
+    avatar.removeAttribute("src");
+  }
+
+  const cover = document.getElementById("coverPreview");
+  const placeholder = document.getElementById("coverPlaceholder");
+
+  if (profileDraft.banner_url) {
+    cover.style.backgroundImage = `url("${profileDraft.banner_url}")`;
+    placeholder.classList.add("hidden");
+  } else {
+    cover.style.backgroundImage = "";
+    placeholder.classList.remove("hidden");
+  }
+
+  avatar.classList.remove("profile-decoration");
+
+  if (profileDraft.decoration !== "none") {
+    avatar.classList.add("profile-decoration");
+    if (profileDraft.decoration === "pink") {
+      avatar.style.borderColor = "#e58abc";
+      avatar.style.boxShadow = "0 0 16px #e58abc";
+    } else if (profileDraft.decoration === "moon") {
+      avatar.style.borderColor = "#b7a7f5";
+      avatar.style.boxShadow = "0 0 16px #b7a7f5";
+    } else {
+      avatar.style.borderColor = "var(--accent)";
+      avatar.style.boxShadow = "0 0 16px var(--accent)";
+    }
+  } else {
+    avatar.style.borderColor = "var(--panel)";
+    avatar.style.boxShadow = "none";
+  }
+}
+
+function loadProfileEditor() {
+  const meta = getMetadata();
+
+  document.getElementById("editUsername").value =
+    meta.username || currentUser?.email?.split("@")[0] || "";
+  document.getElementById("editBio").value = meta.nocturne_bio || "";
+  document.getElementById("editStatus").value = meta.nocturne_status || "En ligne";
+
+  profileDraft = {
+    avatar_url:meta.nocturne_avatar || "",
+    banner_url:meta.nocturne_banner || "",
+    decoration:meta.nocturne_decoration || "none"
+  };
+
+  document.querySelectorAll(".decoration-option").forEach(button => {
+    button.classList.toggle("selected",button.dataset.decoration === profileDraft.decoration);
+  });
+
+  document.getElementById("avatarFile").value = "";
+  document.getElementById("bannerFile").value = "";
+  profileMessage.textContent = "";
+  updateProfilePreview();
+}
+
+["editUsername","editBio","editStatus"].forEach(id => {
+  document.getElementById(id).addEventListener("input",updateProfilePreview);
+});
+
+document.querySelectorAll(".decoration-option").forEach(button => {
+  button.addEventListener("click",() => {
+    profileDraft.decoration = button.dataset.decoration;
+
+    document.querySelectorAll(".decoration-option").forEach(item => {
+      item.classList.toggle("selected",item === button);
+    });
+
+    updateProfilePreview();
+  });
+});
+
+function validateImage(file) {
+  const allowed = ["image/jpeg","image/png","image/webp"];
+
+  if (!allowed.includes(file.type)) {
+    throw new Error("Choisis une image JPG, PNG ou WebP.");
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    throw new Error("Ton image doit faire moins de 5 Mo.");
+  }
+}
+
+async function uploadProfileImage(file,type) {
+  if (!currentUser) throw new Error("Tu dois être connectée.");
+  validateImage(file);
+
+  const extension = file.type === "image/png" ? "png" :
+    file.type === "image/webp" ? "webp" : "jpg";
+
+  const filePath = `${currentUser.id}/${type}-${Date.now()}.${extension}`;
+
+  const { data,error } = await supabase.storage
+    .from("profile-images")
+    .upload(filePath,file,{
+      contentType:file.type,
+      upsert:false
+    });
+
+  if (error) throw error;
+
+  const { data:publicData } = supabase.storage
+    .from("profile-images")
+    .getPublicUrl(data.path);
+
+  return publicData.publicUrl;
+}
+
+document.getElementById("avatarFile").addEventListener("change",async event => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  profileMessage.textContent = "Envoi de la photo en cours...";
+
+  try {
+    profileDraft.avatar_url = await uploadProfileImage(file,"avatar");
+    updateProfilePreview();
+    profileMessage.textContent = "Photo chargée ! N'oublie pas d'enregistrer ton profil.";
+  } catch (error) {
+    profileMessage.textContent = "Erreur : "+error.message;
+  }
+});
+
+document.getElementById("bannerFile").addEventListener("change",async event => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  profileMessage.textContent = "Envoi de la bannière en cours...";
+
+  try {
+    profileDraft.banner_url = await uploadProfileImage(file,"banner");
+    updateProfilePreview();
+    profileMessage.textContent = "Bannière chargée ! N'oublie pas d'enregistrer ton profil.";
+  } catch (error) {
+    profileMessage.textContent = "Erreur : "+error.message;
+  }
+});
+
+document.getElementById("removeAvatar").onclick = () => {
+  profileDraft.avatar_url = "";
+  document.getElementById("avatarFile").value = "";
+  updateProfilePreview();
+};
+
+document.getElementById("removeBanner").onclick = () => {
+  profileDraft.banner_url = "";
+  document.getElementById("bannerFile").value = "";
+  updateProfilePreview();
+};
+
+async function saveProfile() {
+  if (!currentUser) return;
+
+  const username = document.getElementById("editUsername").value.trim();
+  const bio = document.getElementById("editBio").value.trim();
+  const status = document.getElementById("editStatus").value;
+
+  if (username.length < 3 || username.length > 24) {
+    profileMessage.textContent = "Ton pseudo doit contenir entre 3 et 24 caractères.";
+    return;
+  }
+
+  if (bio.length > 300) {
+    profileMessage.textContent = "Ta biographie est trop longue.";
+    return;
+  }
+
+  profileMessage.textContent = "Sauvegarde de ton profil...";
+
+  const { data,error } = await supabase.auth.updateUser({
+    data:{
+      username,
+      nocturne_bio:bio,
+      nocturne_status:status,
+      nocturne_avatar:profileDraft.avatar_url,
+      nocturne_banner:profileDraft.banner_url,
+      nocturne_decoration:profileDraft.decoration
+    }
+  });
+
+  if (error) {
+    profileMessage.textContent = "Erreur : "+error.message;
+    return;
+  }
+
+  currentUser = data.user;
+  updateSidebarProfile();
+  updateProfilePreview();
+  profileMessage.textContent = "Ton profil a été sauvegardé avec succès ! ♡";
+}
+
+document.getElementById("saveProfile").onclick = saveProfile;
+
+document.getElementById("cancelProfile").onclick = () => {
+  loadProfileEditor();
+  showHome();
+};
+
+function updateSidebarProfile() {
+  if (!currentUser) return;
+
+  const meta = getMetadata();
+  const username = meta.username || currentUser.email?.split("@")[0] || "Membre";
+  const avatar = document.getElementById("profileAvatar");
+
+  document.getElementById("profileName").textContent = username;
+  document.getElementById("sidebarStatus").textContent = meta.nocturne_status || "En ligne";
+
+  if (meta.nocturne_avatar) {
+    avatar.src = meta.nocturne_avatar;
+  } else {
+    avatar.removeAttribute("src");
+    avatar.alt = username;
+  }
+}
+
+/* SESSION */
 
 async function updateSession(session) {
   if (session) {
@@ -790,17 +945,10 @@ async function updateSession(session) {
     authArea.classList.add("hidden");
     app.classList.remove("hidden");
 
-    const username =
-      session.user.user_metadata?.username ||
-      session.user.email?.split("@")[0] ||
-      "Membre";
-
-    document.getElementById("profileName").textContent = username;
-    document.getElementById("profileAvatar").textContent =
-      username.charAt(0).toUpperCase();
-
     const savedTheme = session.user.user_metadata?.nocturne_theme || defaultTheme;
     applyTheme(savedTheme);
+    updateSidebarProfile();
+    loadProfileEditor();
     showHome();
   } else {
     currentUser = null;
@@ -809,8 +957,7 @@ async function updateSession(session) {
   }
 }
 
-const { data: sessionData, error: sessionError } =
-  await supabase.auth.getSession();
+const { data:sessionData,error:sessionError } = await supabase.auth.getSession();
 
 if (sessionError) {
   showAuthMessage(sessionError.message);
@@ -818,7 +965,7 @@ if (sessionError) {
   await updateSession(sessionData.session);
 }
 
-supabase.auth.onAuthStateChange((_event, session) => {
+supabase.auth.onAuthStateChange((_event,session) => {
   updateSession(session);
 });
 
