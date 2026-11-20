@@ -186,6 +186,23 @@ label { display:block; margin:15px 0 7px; color:var(--muted); font-size:13px; }
 #profileMessage { color:var(--accent); font-size:13px; margin-top:14px; }
 .file-help { color:var(--muted); font-size:11px; margin-top:6px; }
 
+.friends-layout { max-width:900px; }
+.friends-card { background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:20px; margin-bottom:18px; }
+.friends-card h3 { margin-bottom:12px; }
+.friends-card p { color:var(--muted); font-size:13px; line-height:1.5; margin-bottom:12px; }
+.friend-search-row { display:flex; gap:9px; }
+.friend-search-row input { flex:1; min-width:0; padding:12px; background:var(--sidebar); border:1px solid var(--border); color:white; border-radius:8px; }
+.friend-item { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--border); }
+.friend-item:last-child { border-bottom:0; }
+.friend-item img,.friend-avatar { width:42px; height:42px; border-radius:50%; object-fit:cover; background:var(--accent2); display:grid; place-items:center; flex-shrink:0; }
+.friend-item-info { flex:1; min-width:0; }
+.friend-item-name { font-weight:bold; overflow-wrap:anywhere; }
+.friend-item-sub { color:var(--muted); font-size:12px; margin-top:3px; }
+.friend-item button { padding:8px 11px; border-radius:7px; border:1px solid var(--border); background:var(--panel2); color:white; }
+.friend-item button.primary { background:var(--accent); border:0; }
+.friends-message { color:var(--accent); font-size:13px; margin-top:10px; white-space:pre-wrap; }
+@media(max-width:560px) { .friend-search-row { flex-direction:column; } }
+
 @media(max-width:800px) {
   .channels { width:190px; }
 }
@@ -251,7 +268,7 @@ label { display:block; margin:15px 0 7px; color:var(--muted); font-size:13px; }
   <aside class="servers">
     <div class="server-icon selected" title="Nocturne">☾</div>
     <div class="server-icon" title="Communauté">🦇</div>
-    <div class="server-icon" title="Amis">♡</div>
+    <div class="server-icon" id="friendsButton" title="Amis">♡</div>
     <div class="server-icon server-add" title="Créer un serveur">+</div>
   </aside>
 
@@ -436,6 +453,33 @@ label { display:block; margin:15px 0 7px; color:var(--muted); font-size:13px; }
           </div>
         </div>
       </section>
+
+      <!-- AMIS -->
+      <section class="view hidden" id="friendsView">
+        <div class="friends-layout">
+          <h2>♡ Mes amis</h2>
+          <div class="friends-card">
+            <h3>Rechercher des membres</h3>
+            <p>Recherche un pseudo pour trouver des personnes sur Nocturne.</p>
+            <div class="friend-search-row">
+              <input id="friendSearchInput" type="search" maxlength="24" placeholder="Rechercher un pseudo...">
+              <button class="primary" id="friendSearchButton">Rechercher</button>
+            </div>
+            <div id="friendSearchResults"></div>
+            <div class="friends-message" id="friendSearchMessage"></div>
+          </div>
+          <div class="friends-card">
+            <h3>Demandes reçues</h3>
+            <div id="incomingRequests"></div>
+            <div class="friends-message" id="requestsMessage"></div>
+          </div>
+          <div class="friends-card">
+            <h3>Ma liste d'amis</h3>
+            <div id="friendsList"></div>
+            <div class="friends-message" id="friendsMessage"></div>
+          </div>
+        </div>
+      </section>
     </div>
   </main>
 </section>
@@ -462,6 +506,7 @@ const signupForm = document.getElementById("signupForm");
 const authMessage = document.getElementById("authMessage");
 const themeMessage = document.getElementById("themeMessage");
 const profileMessage = document.getElementById("profileMessage");
+const friendSearchMessage = document.getElementById("friendSearchMessage");
 
 let currentUser = null;
 let profileDraft = {
@@ -669,6 +714,7 @@ function showView(viewName,title) {
   document.getElementById("chatView").classList.toggle("hidden",viewName !== "chat");
   document.getElementById("settingsView").classList.toggle("hidden",viewName !== "settings");
   document.getElementById("profileView").classList.toggle("hidden",viewName !== "profile");
+  document.getElementById("friendsView").classList.toggle("hidden",viewName !== "friends");
   document.getElementById("channelTitle").textContent = title;
 }
 
@@ -685,11 +731,17 @@ function showProfile() {
   showView("profile","Mon profil");
 }
 
+function showFriends() {
+  showView("friends","Mes amis");
+  loadFriendsPage();
+}
+
 document.getElementById("settingsButton").onclick = showSettings;
 document.getElementById("themeButton").onclick = showSettings;
 document.getElementById("homeButton").onclick = showHome;
 document.getElementById("profileButton").onclick = showProfile;
 document.getElementById("profileTopButton").onclick = showProfile;
+document.getElementById("friendsButton").onclick = showFriends;
 
 document.querySelectorAll(".channel[data-channel]").forEach(channel => {
   channel.addEventListener("click",() => {
@@ -871,6 +923,22 @@ document.getElementById("removeBanner").onclick = () => {
   updateProfilePreview();
 };
 
+async function syncProfileRow(user = currentUser) {
+  if (!user) return;
+  const meta = user.user_metadata || {};
+  const row = {
+    id: user.id,
+    username: meta.username || user.email?.split("@")[0] || "Membre",
+    avatar_url: meta.nocturne_avatar || null,
+    banner_url: meta.nocturne_banner || null,
+    bio: meta.nocturne_bio || null,
+    status: meta.nocturne_status || "En ligne",
+    theme: JSON.stringify(meta.nocturne_theme || defaultTheme)
+  };
+  const { error } = await supabase.from("profiles").upsert(row, { onConflict:"id" });
+  if (error) console.error("Synchronisation du profil impossible :", error.message);
+}
+
 async function saveProfile() {
   if (!currentUser) return;
 
@@ -907,6 +975,23 @@ async function saveProfile() {
   }
 
   currentUser = data.user;
+  const { error: profileError } = await supabase.from("profiles").upsert({
+    id: currentUser.id,
+    username,
+    avatar_url: profileDraft.avatar_url || null,
+    banner_url: profileDraft.banner_url || null,
+    bio: bio || null,
+    status,
+    theme: JSON.stringify(currentUser.user_metadata?.nocturne_theme || defaultTheme)
+  }, { onConflict:"id" });
+
+  if (profileError) {
+    profileMessage.textContent = "Profil enregistré dans ton compte, mais erreur de synchronisation : " + profileError.message;
+    updateSidebarProfile();
+    updateProfilePreview();
+    return;
+  }
+
   updateSidebarProfile();
   updateProfilePreview();
   profileMessage.textContent = "Ton profil a été sauvegardé avec succès ! ♡";
@@ -937,6 +1022,198 @@ function updateSidebarProfile() {
   }
 }
 
+/* AMIS */
+
+function safeText(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  }[char]));
+}
+
+function friendAvatar(profile) {
+  if (profile.avatar_url) {
+    return `<img src="${safeText(profile.avatar_url)}" alt="">`;
+  }
+  return `<div class="friend-avatar">${safeText((profile.username || "?").charAt(0).toUpperCase())}</div>`;
+}
+
+async function searchMembers() {
+  const term = document.getElementById("friendSearchInput").value.trim();
+  const results = document.getElementById("friendSearchResults");
+  friendSearchMessage.textContent = "";
+  results.innerHTML = "";
+
+  if (term.length < 2) {
+    friendSearchMessage.textContent = "Entre au moins 2 caractères.";
+    return;
+  }
+
+  friendSearchMessage.textContent = "Recherche en cours...";
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id, username, avatar_url, status, bio")
+    .ilike("username", `%${term}%`)
+    .neq("id", currentUser.id)
+    .limit(20);
+
+  if (error) {
+    friendSearchMessage.textContent = "Erreur : " + error.message;
+    return;
+  }
+
+  friendSearchMessage.textContent = data.length ? "" : "Aucun membre trouvé.";
+  for (const member of data) {
+    const item = document.createElement("div");
+    item.className = "friend-item";
+    item.innerHTML = `${friendAvatar(member)}
+      <div class="friend-item-info">
+        <div class="friend-item-name">${safeText(member.username)}</div>
+        <div class="friend-item-sub">${safeText(member.status || "Membre de Nocturne")}</div>
+      </div>
+      <button class="primary" type="button">Ajouter</button>`;
+    item.querySelector("button").onclick = () => sendFriendRequest(member);
+    results.appendChild(item);
+  }
+}
+
+async function sendFriendRequest(member) {
+  friendSearchMessage.textContent = "Envoi de la demande...";
+  const { data: existing, error: checkError } = await supabase
+    .from("friend_requests")
+    .select("id, status, sender_id, receiver_id")
+    .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${member.id}),and(sender_id.eq.${member.id},receiver_id.eq.${currentUser.id})`)
+    .limit(1);
+
+  if (checkError) {
+    friendSearchMessage.textContent = "Erreur : " + checkError.message;
+    return;
+  }
+  if (existing?.length) {
+    friendSearchMessage.textContent = existing[0].status === "pending"
+      ? "Une demande existe déjà entre vous."
+      : "Une demande a déjà été traitée entre vous.";
+    return;
+  }
+
+  const { error } = await supabase.from("friend_requests").insert({
+    sender_id: currentUser.id,
+    receiver_id: member.id,
+    status: "pending"
+  });
+  friendSearchMessage.textContent = error
+    ? "Erreur : " + error.message
+    : "Demande envoyée à " + member.username + " ! ♡";
+}
+
+async function loadIncomingRequests() {
+  const container = document.getElementById("incomingRequests");
+  const message = document.getElementById("requestsMessage");
+  container.innerHTML = "";
+  message.textContent = "Chargement...";
+  const { data: requests, error } = await supabase
+    .from("friend_requests")
+    .select("id, sender_id, created_at")
+    .eq("receiver_id", currentUser.id)
+    .eq("status", "pending");
+
+  if (error) {
+    message.textContent = "Erreur : " + error.message;
+    return;
+  }
+  if (!requests.length) {
+    message.textContent = "Aucune demande pour le moment.";
+    return;
+  }
+  message.textContent = "";
+  for (const request of requests) {
+    const { data: member } = await supabase
+      .from("profiles")
+      .select("id, username, avatar_url, status")
+      .eq("id", request.sender_id)
+      .maybeSingle();
+    if (!member) continue;
+
+    const item = document.createElement("div");
+    item.className = "friend-item";
+    item.innerHTML = `${friendAvatar(member)}
+      <div class="friend-item-info">
+        <div class="friend-item-name">${safeText(member.username)}</div>
+        <div class="friend-item-sub">Souhaite devenir ton ami(e)</div>
+      </div>
+      <button class="primary" type="button">Accepter</button>
+      <button type="button">Refuser</button>`;
+    const buttons = item.querySelectorAll("button");
+    buttons[0].onclick = async () => {
+      message.textContent = "Acceptation en cours...";
+      const { error: acceptError } = await supabase.rpc("accept_friend_request", { request_id:request.id });
+      message.textContent = acceptError ? "Erreur : " + acceptError.message : "Demande acceptée ! ♡";
+      await loadFriendsPage();
+    };
+    buttons[1].onclick = async () => {
+      const { error: declineError } = await supabase
+        .from("friend_requests")
+        .update({ status:"declined" })
+        .eq("id", request.id)
+        .eq("receiver_id", currentUser.id);
+      message.textContent = declineError ? "Erreur : " + declineError.message : "Demande refusée.";
+      await loadFriendsPage();
+    };
+    container.appendChild(item);
+  }
+}
+
+async function loadFriendsList() {
+  const container = document.getElementById("friendsList");
+  const message = document.getElementById("friendsMessage");
+  container.innerHTML = "";
+  message.textContent = "Chargement...";
+  const { data: links, error } = await supabase
+    .from("friends")
+    .select("friend_id")
+    .eq("user_id", currentUser.id);
+
+  if (error) {
+    message.textContent = "Erreur : " + error.message;
+    return;
+  }
+  if (!links.length) {
+    message.textContent = "Ta liste d'amis est encore vide.";
+    return;
+  }
+
+  const ids = links.map(link => link.friend_id);
+  const { data: members, error: membersError } = await supabase
+    .from("profiles")
+    .select("id, username, avatar_url, status")
+    .in("id", ids);
+
+  if (membersError) {
+    message.textContent = "Erreur : " + membersError.message;
+    return;
+  }
+  message.textContent = "";
+  for (const member of members || []) {
+    const item = document.createElement("div");
+    item.className = "friend-item";
+    item.innerHTML = `${friendAvatar(member)}
+      <div class="friend-item-info">
+        <div class="friend-item-name">${safeText(member.username)}</div>
+        <div class="friend-item-sub">${safeText(member.status || "Membre de Nocturne")}</div>
+      </div>`;
+    container.appendChild(item);
+  }
+}
+
+async function loadFriendsPage() {
+  if (!currentUser) return;
+  await Promise.all([loadIncomingRequests(), loadFriendsList()]);
+}
+
+document.getElementById("friendSearchButton").onclick = searchMembers;
+document.getElementById("friendSearchInput").addEventListener("keydown", event => {
+  if (event.key === "Enter") searchMembers();
+});
+
 /* SESSION */
 
 async function updateSession(session) {
@@ -950,6 +1227,7 @@ async function updateSession(session) {
     updateSidebarProfile();
     loadProfileEditor();
     showHome();
+    syncProfileRow(session.user).catch(error => console.error(error));
   } else {
     currentUser = null;
     app.classList.add("hidden");
